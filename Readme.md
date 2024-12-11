@@ -1,44 +1,70 @@
 ## CLI
 
+```
 dotnet new mstest -n BoutiqueWeb.UnitTests
 cd BoutiqueWeb.UnitTests
 dotnet add BoutiqueWeb.UnitTests.csproj reference ../BoutiqueWeb/BoutiqueWeb.csproj
 dotnet add package FluentAssertions --version 6.12.0
 dotnet add package Moq
 dotnet add package Microsoft.EntityFrameworkCore.InMemory --version 8.0.0
+```
 
 ## Source code - Example
 
+https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices
+Test pattern: AAA (Arrange, Act, Assert)
+
+```
 namespace BoutiqueWeb.UniTests;
 
+using BoutiqueWeb.Models;
+using BoutiqueWeb.DTO;
+
 [TestClass]
-public class UnitTest1
+public class ClientDtoTests
 {
     [TestMethod]
-    public void TestMethod1()
+    public void ShouldOverideBirthday_WhenNull()
     {
-        var p = new Produit() {
-            Prix = 9.99
+        // Arrange
+        Client stan = new()
+        {
+            Prenom = "Stan",
+            Nom = "Smith",
+            Adresse = "7 Cours de la Marne, 33000 Bordeaux",
+            DateDeNaissance = null,
         };
-        var c = new Commande() {
-            Produit = p,
-            Quantite = 10
-        }; // 10 produits
-        var prix = c.getPrix();
-        Assert.AreEqual(99.9, prix);
+
+        // Act
+        var clientDTO = new ClientDTO(stan);
+
+        // Assert
+        Assert.AreEqual(clientDTO.FirstName, "Stan");
+        Assert.AreEqual(clientDTO.LastName, "Smith");
+        Assert.AreEqual(clientDTO.Address, "7 Cours de la Marne, 33000 Bordeaux");
+        Assert.AreEqual(clientDTO.Birthday, "Unknown");
     }
-    
+
     [TestMethod]
-    public void TestMethod2()
+    public void ShouldOverideAddress_WhenNull()
     {
-        var p = new Produit() {
-            Prix = 9.99
+        // Arrange
+        Client stan = new()
+        {
+            Prenom = "Stan",
+            Nom = "Smith",
+            Adresse = null,
+            DateDeNaissance = null,
         };
-        var c = new Commande() {
-            Produit = p,
-            Quantite = 0
-        }; // 10 produits
-        var prix = c.getPrix();
-        Assert.AreEqual(0, prix);
+
+        // Act
+        var clientDTO = new ClientDTO(stan);
+
+        // Assert
+        Assert.AreEqual(clientDTO.FirstName, "Stan");
+        Assert.AreEqual(clientDTO.LastName, "Smith");
+        Assert.AreEqual(clientDTO.Address, "Unknown");
+        Assert.AreEqual(clientDTO.Birthday, "Unknown");
     }
 }
+```
